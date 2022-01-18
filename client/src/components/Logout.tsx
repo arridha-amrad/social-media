@@ -1,4 +1,4 @@
-import { Button } from "@chakra-ui/react";
+import { MenuItem } from "@chakra-ui/react";
 import { useDispatch } from "react-redux";
 import {
   LOADING_AUTH,
@@ -28,9 +28,9 @@ const Logout = () => {
     }
   };
   return (
-    <Button onClick={handleLogout} variant="solid" color="red">
+    <MenuItem onClick={handleLogout} variant="solid" color="red">
       Logout
-    </Button>
+    </MenuItem>
   );
 };
 

@@ -12,6 +12,7 @@ export const createPostHandler = async (
     const newPostData = new PostModel({
       imageURL,
       description,
+      owner: req.userId,
     });
     const newPost = await newPostData.save();
     return res.status(201).json({ post: newPost });
@@ -41,7 +42,9 @@ export const getPostsHandler = async (
   next: NextFunction,
 ) => {
   try {
-    const posts = await PostModel.find();
+    const posts = await PostModel.find()
+      .populate('owner', 'id username avatarURL')
+      .sort({ updatedAt: 'desc' });
     return res.status(200).json({ posts });
   } catch (err) {
     console.log(err);

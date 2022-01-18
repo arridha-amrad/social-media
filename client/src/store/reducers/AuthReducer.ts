@@ -1,7 +1,7 @@
 import { AuthActionsType } from "../types/AuthTypes";
 
 export interface AuthenticatedUserData {
-  id: string;
+  _id: string;
   email: string;
   username: string;
   fullName: string;

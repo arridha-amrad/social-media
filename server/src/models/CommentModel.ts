@@ -15,14 +15,16 @@ const CommentSchema = new mongoose.Schema(
       required: true,
     },
     owner: {
-      type: mongoose.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
     },
     post: {
-      type: mongoose.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Post',
     },
     likes: [
       {
-        type: mongoose.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
       },
     ],

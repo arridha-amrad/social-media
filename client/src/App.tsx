@@ -2,6 +2,7 @@ import { Box, Spinner } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Home, Login, Register } from "./pages";
 import {
@@ -18,7 +19,7 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(true);
   const fetchUser = async () => {
     try {
-      dispatch({ type: LOADING_AUTH })
+      dispatch({ type: LOADING_AUTH });
       await axiosInstance.get("/api/auth/refresh-token");
       const { data } = await axiosInstance.get("/api/user/me");
       if (isMounted) {
@@ -33,10 +34,10 @@ const App = () => {
     } catch (err) {
       console.log(err);
     } finally {
-      dispatch({ type: STOP_LOADING_AUTH })
+      dispatch({ type: STOP_LOADING_AUTH });
       setTimeout(() => {
         setIsLoading(false);
-      }, 2000)
+      }, 2000);
     }
   };
   useEffect(() => {
@@ -48,15 +49,21 @@ const App = () => {
   }, []);
   if (isLoading) {
     return (
-      <Box d="flex" h="100vh" w="100%" alignItems="center" justifyContent="center">
+      <Box
+        d="flex"
+        h="100vh"
+        w="100%"
+        alignItems="center"
+        justifyContent="center"
+      >
         <Spinner size="xl" />
       </Box>
-    )
+    );
   }
   return (
     <Routes>
       <Route element={<ProtectedRoute />}>
-        <Route path="/" element={<Home isLoading={isLoading} />} />
+        <Route path="/" element={<Home />} />
       </Route>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
