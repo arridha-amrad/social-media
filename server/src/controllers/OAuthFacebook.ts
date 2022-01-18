@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import nanoid from "nanoid/async"
 import { v4 } from "uuid";
-import { set } from "../database/redisClient";
+import { set } from "../database/redis";
 import UserModel from "../models/UserModel";
 import { signAccessToken, signRefreshToken } from "../services/JwtService";
 import { encrypt } from "../utils/Encrypt";

@@ -5,7 +5,7 @@ import UserModel from '../models/UserModel';
 import { v4 } from 'uuid';
 import { signAccessToken, signRefreshToken } from '../services/JwtService';
 import { encrypt } from '../utils/Encrypt';
-import { set } from '../database/redisClient';
+import { set } from '../database/redis';
 
 interface GoogleTokensResult {
   access_token: string;
