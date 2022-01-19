@@ -42,7 +42,9 @@ const Home = () => {
   return (
     <Container maxW="container.lg">
       <CreatePost />
-      <Posts />
+      <Box mt="5">
+        <Posts />
+      </Box>
     </Container>
   );
 };

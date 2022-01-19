@@ -17,10 +17,14 @@ export const createCommentHandler = async (
       post: postId,
     });
     const newComment = await newCommentData.save();
+    const comment = await newComment.populate(
+      'owner',
+      '_id username avatarURL',
+    );
     await PostModel.findByIdAndUpdate(postId, {
       $push: { comments: newComment.id },
     });
-    return res.status(200).json({ comment: newComment });
+    return res.status(200).json({ comment });
   } catch (err) {
     console.log(err);
     return next(new ServerErrorException());

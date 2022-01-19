@@ -14,7 +14,8 @@ export const createPostHandler = async (
       description,
       owner: req.userId,
     });
-    const newPost = await newPostData.save();
+    let newPost = await newPostData.save();
+    await newPost.populate('owner', 'id username avatarURL');
     return res.status(201).json({ post: newPost });
   } catch (err) {
     console.log(err);
@@ -44,7 +45,15 @@ export const getPostsHandler = async (
   try {
     const posts = await PostModel.find()
       .populate('owner', 'id username avatarURL')
-      .sort({ updatedAt: 'desc' });
+      .populate({
+        path: 'comments',
+        options: { sort: { createdAt: 'desc' } },
+        populate: {
+          path: 'owner',
+          select: 'id username avatarURL',
+        },
+      })
+      .sort({ createdAt: 'desc' });
     return res.status(200).json({ posts });
   } catch (err) {
     console.log(err);

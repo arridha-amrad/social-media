@@ -1,3 +1,23 @@
 .isLiked {
-  color: pink;
+  color: pink !important;
+}
+
+.small-icon {
+  font-size: 0.7rem;
+  cursor: pointer;
+  color: rgb(99, 99, 99);
+}
+
+.edit-icon:hover {
+  color: rgb(0, 102, 255);
+}
+
+.delete-icon:hover {
+  color: red;
+}
+
+.comment-heart {
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: rgb(95, 95, 95);
 }

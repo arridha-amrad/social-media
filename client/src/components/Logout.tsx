@@ -27,11 +27,7 @@ const Logout = () => {
       });
     }
   };
-  return (
-    <MenuItem onClick={handleLogout} variant="solid" color="red">
-      Logout
-    </MenuItem>
-  );
+  return <MenuItem onClick={handleLogout}>Logout</MenuItem>;
 };
 
 export default Logout;
