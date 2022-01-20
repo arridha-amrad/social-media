@@ -18,19 +18,18 @@ import { PostActionTypes } from "../store/types/PostTypes";
 import "./components.css";
 import axiosInstance from "../utils/AxiosInterceptor";
 import DeleteCommentButton from "./DeleteCommentButton";
-import { Link } from "react-router-dom";
 
 const Comments: FC<{ comments: Comment[] }> = ({ comments }) => {
   const { authenticatedUser } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch<Dispatch<PostActionTypes>>();
-  const likeCommentHandler = async (commentId: string, postId: string) => {
+  const likeCommentHandler = async (comment: Comment) => {
     try {
-      await axiosInstance.post(`/api/comment/like-dislike/${commentId}`);
+      await axiosInstance.post(`/api/comment/like-dislike/${comment._id}`);
       dispatch({
         type: "TOGGLE_LIKE_COMMENT",
         payload: {
-          commentId,
-          postId,
+          commentId: comment._id,
+          postId: comment.post,
           userId: authenticatedUser!._id,
         },
       });
@@ -38,6 +37,41 @@ const Comments: FC<{ comments: Comment[] }> = ({ comments }) => {
       console.log(err);
     }
   };
+  const usernameAndTime = (comment: Comment) => (
+    <Flex flexDir="column" alignItems="start">
+      <Text fontWeight="bold" fontSize="small">
+        {comment.owner.username}
+      </Text>
+      <Text mt="-1" fontSize="xs" color="GrayText">
+        <Moment fromNow>{comment.createdAt}</Moment>
+      </Text>
+    </Flex>
+  );
+
+  const showNumberOfLikes = (comment: Comment) => (
+    <Flex>
+      <Text fontSize="xs" color="GrayText">
+        {comment.likes.length !== 0 && comment.likes.length}
+        &nbsp;
+      </Text>
+      <Text fontSize="xs" color="GrayText">
+        {comment.likes.length === 0
+          ? ""
+          : comment.likes.length > 1
+          ? " likes"
+          : " like"}
+      </Text>
+    </Flex>
+  );
+  const likeIcon = (comment: Comment, isLiked: () => string | undefined) => (
+    <Box onClick={() => likeCommentHandler(comment)}>
+      {isLiked() ? (
+        <i className="fas fa-heart comment-heart isLiked"></i>
+      ) : (
+        <i className="far fa-heart comment-heart"></i>
+      )}
+    </Box>
+  );
   return (
     <>
       <Accordion ml="5" allowToggle>
@@ -68,14 +102,7 @@ const Comments: FC<{ comments: Comment[] }> = ({ comments }) => {
                     <Flex ml="5" flexDir="column" w="100%">
                       <Flex alignItems="start" justifyContent="space-between">
                         <Flex alignItems="flex-start" gap="5px">
-                          <Flex flexDir="column" alignItems="start">
-                            <Text fontWeight="bold" fontSize="small">
-                              {comment.owner.username}
-                            </Text>
-                            <Text mt="-1" fontSize="xs" color="GrayText">
-                              <Moment fromNow>{comment.createdAt}</Moment>
-                            </Text>
-                          </Flex>
+                          {usernameAndTime(comment)}
                           {comment.owner._id === authenticatedUser?._id && (
                             <DeleteCommentButton comment={comment} />
                           )}
@@ -86,30 +113,8 @@ const Comments: FC<{ comments: Comment[] }> = ({ comments }) => {
                       </Text>
                     </Flex>
                     <Flex flexDir="column" alignItems="flex-end">
-                      <Flex>
-                        <Text fontSize="xs" color="GrayText">
-                          {comment.likes.length !== 0 && comment.likes.length}
-                          &nbsp;
-                        </Text>
-                        <Text fontSize="xs" color="GrayText">
-                          {comment.likes.length === 0
-                            ? ""
-                            : comment.likes.length > 1
-                            ? " likes"
-                            : " like"}
-                        </Text>
-                      </Flex>
-                      <Box
-                        onClick={() =>
-                          likeCommentHandler(comment._id, comment.post)
-                        }
-                      >
-                        {isLiked() ? (
-                          <i className="fas fa-heart comment-heart isLiked"></i>
-                        ) : (
-                          <i className="far fa-heart comment-heart"></i>
-                        )}
-                      </Box>
+                      {showNumberOfLikes(comment)}
+                      {likeIcon(comment, isLiked)}
                     </Flex>
                   </Flex>
                 </Flex>
