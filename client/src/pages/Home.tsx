@@ -15,6 +15,7 @@ import { PostActionTypes } from "../store/types/PostTypes";
 import { PostData } from "../store/reducers/PostReducer";
 
 const Home = () => {
+  const { isLoadingAuth } = useSelector((state: RootState) => state.auth);
   const [mounted, setIsMounted] = useState(true);
   const dispatch = useDispatch<Dispatch<PostActionTypes>>();
   const fetchPosts = async () => {
@@ -35,7 +36,9 @@ const Home = () => {
     }
   };
   useEffect(() => {
-    fetchPosts();
+    if (!isLoadingAuth) {
+      fetchPosts();
+    }
     return () => setIsMounted((prev) => !prev);
     // eslint-disable-next-line
   }, []);

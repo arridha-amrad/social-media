@@ -9,23 +9,25 @@ import {
   Input,
   Text,
 } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import axios from "axios";
+import React, { Dispatch, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { RootState } from "../store";
 import {
-  AUTHENTICATED_USER_DATA,
+  AuthActionsType,
   LOADING_AUTH,
   STOP_LOADING_AUTH,
 } from "../store/types/AuthTypes";
-import axiosInstance from "../utils/AxiosInterceptor";
 import getGoogleOauthURL from "../utils/GetGoogleOAuthURL";
 
 const Login = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<Dispatch<AuthActionsType>>();
   const [message, setMessage] = useState("");
-  const { isLoadingAuth, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { isLoadingAuth, isAuthenticated } = useSelector(
+    (state: RootState) => state.auth
+  );
   const [state, setState] = useState({
     identity: "",
     password: "",
@@ -39,14 +41,21 @@ const Login = () => {
   const handleLogin = async () => {
     try {
       dispatch({ type: LOADING_AUTH });
-      const { data } = await axiosInstance.post("/api/auth/login", state);
-      if (data) {
-        navigate("/");
-        dispatch({
-          type: AUTHENTICATED_USER_DATA,
-          payload: data.user,
-        });
-      }
+      const { data } = await axios.post(
+        `${process.env.REACT_APP_SERVER_URL}/api/auth/login`,
+        state,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      dispatch({
+        type: "AUTHENTICATED_USER_DATA",
+        payload: data.user,
+      });
+      window.location.href = "/";
     } catch (err: any) {
       console.log(err);
       setMessage(err.response.data.message);
@@ -61,7 +70,7 @@ const Login = () => {
       setMessage(myParam);
     }
     if (!isLoadingAuth && isAuthenticated) {
-      navigate("/")
+      navigate("/");
     }
     // eslint-disable-next-line
   }, []);
@@ -69,8 +78,8 @@ const Login = () => {
     window.open(getGoogleOauthURL(), "_blank");
   };
   const openFacebookOauth = () => {
-    window.open("http://localhost:5000/api/facebook/login", "_blank")
-  }
+    window.open("http://localhost:5000/api/facebook/login", "_blank");
+  };
   return (
     <Container>
       {!!message && (
@@ -95,7 +104,7 @@ const Login = () => {
         <FormLabel>Password</FormLabel>
         <Input
           name="password"
-          type="text"
+          type="password"
           value={state.password}
           onChange={handleChange}
         />
@@ -104,8 +113,17 @@ const Login = () => {
         {isLoadingAuth ? "Loading..." : "Login"}
       </Button>
       <Box mt="5">
-        <Button w="100%" mt="2" colorScheme="orange" onClick={openGoogleOauth}>Login with Google</Button>
-        <Button colorScheme="facebook" w="100%" mt="2" onClick={openFacebookOauth}>Login with Facebook</Button>
+        <Button w="100%" mt="2" colorScheme="orange" onClick={openGoogleOauth}>
+          Login with Google
+        </Button>
+        <Button
+          colorScheme="facebook"
+          w="100%"
+          mt="2"
+          onClick={openFacebookOauth}
+        >
+          Login with Facebook
+        </Button>
       </Box>
     </Container>
   );

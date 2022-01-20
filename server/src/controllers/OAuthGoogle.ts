@@ -6,6 +6,7 @@ import { v4 } from 'uuid';
 import { signAccessToken, signRefreshToken } from '../services/JwtService';
 import { encrypt } from '../utils/Encrypt';
 import { set } from '../database/redis';
+import { cookieOptions } from '../utils/CookieOptions';
 
 interface GoogleTokensResult {
   access_token: string;
@@ -95,12 +96,12 @@ export const googleOauthHandler = async (req: Request, res: Response) => {
       email: googleUser.email,
     });
 
-    if (user && user.strategy !== "google") {
+    if (user && user.strategy !== 'google') {
       return res.redirect(
         `${process.env.CLIENT_ORIGIN}/login?e=` +
-        encodeURIComponent(
-          'Another user has been registered with this email',
-        ),
+          encodeURIComponent(
+            'Another user has been registered with this email',
+          ),
       );
     }
 
@@ -111,7 +112,7 @@ export const googleOauthHandler = async (req: Request, res: Response) => {
         avatarURL: picture,
         email,
         fullName: `${given_name} ${family_name}`,
-        username: name.split(" ").join(""),
+        username: name.split(' ').join(''),
         isActive: true,
         isVerified: true,
         jwtVersion: v4(),
@@ -127,8 +128,8 @@ export const googleOauthHandler = async (req: Request, res: Response) => {
     const encryptedAccessToken = encrypt(accessToken!);
     const encryptedRefreshToken = encrypt(refresh_token!);
     await set(`${myUser.id}_refToken`, encryptedRefreshToken);
-    res.cookie(process.env.COOKIE_ID, myUser.id);
-    res.cookie(process.env.COOKIE_NAME, encryptedAccessToken);
+    res.cookie(process.env.COOKIE_ID, myUser.id, cookieOptions());
+    res.cookie(process.env.COOKIE_NAME, encryptedAccessToken, cookieOptions());
     res.redirect(process.env.CLIENT_ORIGIN);
     // set cookies
   } catch (err) {

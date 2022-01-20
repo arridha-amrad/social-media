@@ -32,7 +32,7 @@ export const runServer = (): Application => {
   app.use(cors({ origin: process.env.CLIENT_ORIGIN, credentials: true }));
   app.use([
     passport.initialize(),
-    cookieParser(process.env.CLIENT_ORIGIN),
+    cookieParser(),
     express.json(),
     express.urlencoded({ extended: false }),
   ]);

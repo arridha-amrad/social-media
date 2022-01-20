@@ -25,12 +25,13 @@ import { LoginRequest, RegisterRequest } from '../dto/AuthData';
 import { customAlphabet } from 'nanoid/async';
 import VerificationCodeModel from '../models/VerificationCodeModel';
 import UserModel from '../models/UserModel';
+import { cookieOptions } from '../utils/CookieOptions';
 
 export const checkIsAuthenticated = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
-  const cookieId = req.cookies.COOKIE_ID;
+  const cookieId = req.cookies.qid;
   const LOGIN_COOKIE = req.cookies.LOGIN_COOKIE;
   if (cookieId && LOGIN_COOKIE) {
     const user = await UserModel.findById(cookieId);
@@ -84,12 +85,7 @@ export const registerHandler = async (
     await sendEmail(email, emailConfirmation(username, verificationCode));
     res
       .status(201)
-      .cookie(process.env.COOKIE_ID, newUser.id, {
-        sameSite: 'lax',
-        maxAge: 1000 * 60 * 60 * 24 * 5,
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-      })
+      .cookie(process.env.COOKIE_ID, newUser.id, cookieOptions())
       .json({ message: msg.registerSuccess(email) });
     return;
   } catch (err) {
@@ -118,7 +114,7 @@ export const emailVerificationHandler = async (
     return next(new Exception(HTTP_CODE.BAD_REQUEST, 'invalid code'));
   }
   try {
-    const userId = req.cookies.COOKIE_ID;
+    const userId = req.cookies.qid;
     const code = await VerificationCodeModel.findOne({
       owner: userId,
     }).populate('owner', '-password');
@@ -163,7 +159,7 @@ export const loginHandler = async (
   req: Request,
   res: Response,
   next: NextFunction,
-): Promise<void> => {
+) => {
   const { identity, password }: LoginRequest = req.body;
   const { valid, errors } = Validator.loginValidator({
     identity,
@@ -193,12 +189,18 @@ export const loginHandler = async (
       const encryptedRefreshToken = encrypt(refreshToken);
       // store refreshToken to redis
       await redis.set(`${user.id}_refToken`, encryptedRefreshToken);
-      const loginUser = {
-        id: user.id,
-        username: user.username,
+      const userData = {
+        _id: user.id,
         email: user.email,
+        username: user.username,
+        fullName: user.fullName,
+        avatarURL: user.avatarURL,
       };
-      return responseWithCookie(res, encryptedAccessToken, loginUser);
+      return res
+        .status(200)
+        .cookie(process.env.COOKIE_NAME, encryptedAccessToken, cookieOptions())
+        .cookie(process.env.COOKIE_ID, user.id, cookieOptions())
+        .json({ user: userData });
     }
   } catch (err) {
     console.log(err);
@@ -213,7 +215,7 @@ export const logoutHandler = async (
 ): Promise<void> => {
   try {
     // verify the token first
-    const userId = req.cookies.COOKIE_ID;
+    const userId = req.cookies.qid;
     if (userId) {
       // delete user's cookie
       res.clearCookie(process.env.COOKIE_NAME);
@@ -232,7 +234,7 @@ export const refreshTokenHandler = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const cookieId = req.cookies.COOKIE_ID;
+    const cookieId = req.cookies.qid;
     const encryptedRefreshToken = await redis.get(`${cookieId}_refToken`);
     const bearerRefreshToken = decrypt(encryptedRefreshToken ?? '');
     const token = bearerRefreshToken.split(' ')[1];
@@ -328,78 +330,3 @@ export const resetPasswordHandler = async (
     return next(new ServerErrorException());
   }
 };
-
-// export const googleAuth = async (req: Request, res: Response) => {
-//    //! Set Google Client
-//    const client = new OAuth2Client({
-//       clientId: process.env.GOOGLE_OAUTH_CLIENT_ID!,
-//       clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET!,
-//       redirectUri: process.env.CLIENT_ORIGIN!,
-//    });
-
-//    try {
-//       //! Get Login Ticket.
-//       const googleResponse = await client.verifyIdToken({
-//          idToken: req.body.tokenId,
-//          audience: process.env.GOOGLE_OAUTH_CLIENT_ID!,
-//       });
-
-//       //! Get User email, name from his account.
-//       const { email_verified, email, given_name } =
-//          googleResponse.getPayload() as TokenPayload;
-
-//       if (email_verified) {
-//          //! If the email has been registered .
-//          const isEmailRegistered = await User.find({
-//             email,
-//             $or: [
-//                { strategy: Strategy.default },
-//                { strategy: Strategy.facebook },
-//             ],
-//          });
-//          if (isEmailRegistered.length > 0) {
-//             return responseFailure(res, HTTP_CODE.BAD_REQUEST, {
-//                generic: 'Email already registered with different account',
-//             });
-//          }
-//          let user: IUser | null;
-//          user = await User.findOne({ email, strategy: Strategy.google }).select(
-//             '+jwtVersion'
-//          );
-
-//          // email is not registered yet
-//          const randomNumber = Math.ceil(Math.random() * 10000);
-//          if (!user) {
-//             user = await User.create({
-//                // email: email!,
-//                strategy: Strategy.google,
-//                username: given_name + randomNumber.toString(),
-//                requiredAuthAction: RequiredAuthAction.null,
-//                isActive: true,
-//                isLogin: true,
-//                isVerified: true,
-//                password: 'google',
-//                jwtVersion: v4(),
-//             });
-//          }
-//          // Grab the jwtVersion.
-//          const jwtVersion = user.jwtVersion;
-//          user.isLogin = true;
-//          await user.save();
-//          if (!jwtVersion) {
-//             return responseFailure(res, HTTP_CODE.FORBIDDEN, {
-//                generic: msg.userNotFound,
-//             });
-//          }
-//          // Sign Access Token and Refresh Token .
-//          const accessToken = 'Bearer ' + (await signAccessToken(user.id));
-//          const refreshToken =
-//             'Bearer ' + (await signRefreshToken(user.id, jwtVersion));
-//          // return with create cookie
-//          return responseWithCookie(res, refreshToken, accessToken);
-//       }
-//    } catch (err) {
-//       console.log(err);
-//       return serverError(res);
-//    }
-// };

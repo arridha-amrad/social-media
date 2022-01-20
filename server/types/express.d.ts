@@ -1,6 +1,10 @@
 declare namespace Express {
-   interface Request {
-      userId: string;
-      federatedUser: any
-   }
+  interface Request {
+    userId: string;
+    federatedUser: any;
+    cookies: {
+      qid: string;
+      auth_cookie: string;
+    };
+  }
 }

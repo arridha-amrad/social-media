@@ -105,7 +105,7 @@ export function verifyAccessToken(
   _: Response,
   next: NextFunction,
 ): void {
-  const encryptedToken = req.cookies.LOGIN_COOKIE;
+  const encryptedToken = req.cookies.auth_cookie;
   if (!encryptedToken) {
     return next(
       new Exception(HTTP_CODE.UNAUTHORIZED, 'You are not authorized'),
