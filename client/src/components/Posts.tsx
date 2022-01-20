@@ -9,12 +9,14 @@ import EditPostForm from "./EditPostForm";
 import CommentButton from "./CommentButton";
 import AddPostCommentBox from "./AddPostCommentBox";
 import Comments from "./Comments";
+import { useNavigate } from "react-router-dom";
 
 const Posts = () => {
   const {
     posts: { posts },
     auth: { authenticatedUser },
   } = useSelector((state: RootState) => state);
+  const navigate = useNavigate();
   return (
     <>
       <Container>
@@ -46,7 +48,13 @@ const Posts = () => {
                   {post.isEdit ? (
                     <EditPostForm post={post} />
                   ) : (
-                    <Box whiteSpace="pre-line" py="4" ml="5" minH={"10"}>
+                    <Box
+                      onClick={() => navigate(`/post?id=${post._id}`)}
+                      whiteSpace="pre-line"
+                      py="4"
+                      ml="5"
+                      minH={"10"}
+                    >
                       <Text>{post.description}</Text>
                     </Box>
                   )}

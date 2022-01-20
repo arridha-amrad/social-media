@@ -32,7 +32,7 @@ const DeleteCommentButton: FC<{ comment: Comment }> = ({ comment }) => {
       onClose={() => setIsOpen(false)}
     >
       <Tooltip label="Delete comment">
-        <Box onClick={() => setIsOpen(true)} ml="5">
+        <Box onClick={() => setIsOpen(true)} mt="-1" ml="5">
           <i className="fas fa-trash small-icon delete-icon"></i>
         </Box>
       </Tooltip>

@@ -18,6 +18,7 @@ import { PostActionTypes } from "../store/types/PostTypes";
 import "./components.css";
 import axiosInstance from "../utils/AxiosInterceptor";
 import DeleteCommentButton from "./DeleteCommentButton";
+import { Link } from "react-router-dom";
 
 const Comments: FC<{ comments: Comment[] }> = ({ comments }) => {
   const { authenticatedUser } = useSelector((state: RootState) => state.auth);
@@ -59,25 +60,45 @@ const Comments: FC<{ comments: Comment[] }> = ({ comments }) => {
               return (
                 <Flex alignItems="flex-start" mb="3" ml="5" key={comment._id}>
                   <Avatar size="sm" src={comment.owner.avatarURL} />
-                  <Flex ml="5" flexDir="column" w="100%">
-                    <Flex alignItems="center" gap="5px">
-                      <Text fontWeight="bold" fontSize="small">
-                        {comment.owner.username}
-                      </Text>
-                      <Text fontSize="xs" color="GrayText">
-                        <Moment fromNow>{comment.createdAt}</Moment>
-                      </Text>
-                      {comment.owner._id === authenticatedUser?._id && (
-                        <DeleteCommentButton comment={comment} />
-                      )}
-                    </Flex>
-                    <Flex
-                      alignItems="flex-start"
-                      justifyContent="space-between"
-                    >
+                  <Flex
+                    w="100%"
+                    alignItems="start"
+                    justifyContent="space-between"
+                  >
+                    <Flex ml="5" flexDir="column" w="100%">
+                      <Flex alignItems="start" justifyContent="space-between">
+                        <Flex alignItems="flex-start" gap="5px">
+                          <Flex flexDir="column" alignItems="start">
+                            <Text fontWeight="bold" fontSize="small">
+                              {comment.owner.username}
+                            </Text>
+                            <Text mt="-1" fontSize="xs" color="GrayText">
+                              <Moment fromNow>{comment.createdAt}</Moment>
+                            </Text>
+                          </Flex>
+                          {comment.owner._id === authenticatedUser?._id && (
+                            <DeleteCommentButton comment={comment} />
+                          )}
+                        </Flex>
+                      </Flex>
                       <Text whiteSpace="pre-line" fontSize="small">
                         {comment.body}
                       </Text>
+                    </Flex>
+                    <Flex flexDir="column" alignItems="flex-end">
+                      <Flex>
+                        <Text fontSize="xs" color="GrayText">
+                          {comment.likes.length !== 0 && comment.likes.length}
+                          &nbsp;
+                        </Text>
+                        <Text fontSize="xs" color="GrayText">
+                          {comment.likes.length === 0
+                            ? ""
+                            : comment.likes.length > 1
+                            ? " likes"
+                            : " like"}
+                        </Text>
+                      </Flex>
                       <Box
                         onClick={() =>
                           likeCommentHandler(comment._id, comment.post)
@@ -90,14 +111,6 @@ const Comments: FC<{ comments: Comment[] }> = ({ comments }) => {
                         )}
                       </Box>
                     </Flex>
-                    <Text fontSize="xs" color="GrayText">
-                      {comment.likes.length !== 0 && comment.likes.length}{" "}
-                      {comment.likes.length === 0
-                        ? ""
-                        : comment.likes.length > 1
-                        ? "likes"
-                        : "like"}
-                    </Text>
                   </Flex>
                 </Flex>
               );

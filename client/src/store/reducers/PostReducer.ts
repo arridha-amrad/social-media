@@ -72,7 +72,7 @@ export default function PostReducer(
     case "ADD_POSTS":
       return {
         ...state,
-        posts: [...posts, ...action.payload],
+        posts: action.payload,
       };
     case "ADD_POST":
       return {

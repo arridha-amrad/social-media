@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Home, Login, Register } from "./pages";
+import PostDetail from "./pages/PostDetail";
 import {
   AUTHENTICATED_USER_DATA,
   LOADING_AUTH,
@@ -63,6 +64,7 @@ const App = () => {
     <Routes>
       <Route element={<ProtectedRoute />}>
         <Route path="/" element={<Home />} />
+        <Route path="/post" element={<PostDetail />} />
       </Route>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
