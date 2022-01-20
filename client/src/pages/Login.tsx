@@ -12,7 +12,7 @@ import {
 import axios from "axios";
 import React, { Dispatch, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { RootState } from "../store";
 import {
   AuthActionsType,
@@ -112,6 +112,9 @@ const Login = () => {
       <Button mt="10" w="100%" onClick={handleLogin} color="blue">
         {isLoadingAuth ? "Loading..." : "Login"}
       </Button>
+      <Box mt="2" textAlign="center">
+        <Link to="/register">register</Link>
+      </Box>
       <Box mt="5">
         <Button w="100%" mt="2" colorScheme="orange" onClick={openGoogleOauth}>
           Login with Google

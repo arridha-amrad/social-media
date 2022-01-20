@@ -27,8 +27,14 @@ const EmailVerification: FC<EmailVerificationProps> = ({
           onChange={(e) => setVerificationCode(e.target.value)}
         />
       </FormControl>
-      <Button mt="10" w="100%" onClick={verify} color="blue">
-        {isLoading ? "Loading" : "Verify"}
+      <Button
+        isLoading={isLoading}
+        mt="10"
+        w="100%"
+        onClick={verify}
+        color="blue"
+      >
+        Verify
       </Button>
     </>
   );

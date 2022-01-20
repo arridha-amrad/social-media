@@ -1,6 +1,14 @@
-import { Text, FormControl, FormLabel, Input, Button } from "@chakra-ui/react";
+import {
+  Text,
+  FormControl,
+  FormLabel,
+  Input,
+  Button,
+  Box,
+} from "@chakra-ui/react";
 import React from "react";
 import { FC } from "react";
+import { Link } from "react-router-dom";
 
 interface RegisterComponentsProps {
   email: string;
@@ -46,9 +54,20 @@ const RegisterComponents: FC<RegisterComponentsProps> = ({
           onChange={handleChange}
         />
       </FormControl>
-      <Button mt="10" w="100%" onClick={handleRegister} color="blue">
-        {isLoading ? "Loading" : "Register"}
+      <Button
+        colorScheme="blue"
+        isLoading={isLoading}
+        mt="10"
+        w="100%"
+        onClick={handleRegister}
+      >
+        Register
       </Button>
+      <Box mt="2" textAlign="center">
+        <Link color="blue" to="/login">
+          login
+        </Link>
+      </Box>
     </>
   );
 };

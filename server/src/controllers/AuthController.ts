@@ -56,8 +56,14 @@ export const registerHandler = async (
   });
   if (!valid) next(new BadRequestException(errors));
   try {
+    const existingUsername = await UserModel.findOne({ username });
+    if (existingUsername) {
+      return res.status(400).json({
+        message: 'Another user has been registered with this username',
+      });
+    }
     const existingUser = await UserModel.findOne({ email });
-    if (existingUser && existingUser.strategy !== 'default') {
+    if (existingUser) {
       return res
         .status(400)
         .json({ message: 'Another user has been registered with this email' });
@@ -83,23 +89,10 @@ export const registerHandler = async (
     });
     await newVerificationCode.save();
     await sendEmail(email, emailConfirmation(username, verificationCode));
-    res
-      .status(201)
-      .cookie(process.env.COOKIE_ID, newUser.id, cookieOptions())
-      .json({ message: msg.registerSuccess(email) });
-    return;
+    res.cookie(process.env.COOKIE_ID, newUser.id, cookieOptions());
+    res.status(201).json({ message: msg.registerSuccess(email) });
   } catch (err) {
-    console.error(err);
-    if (err.keyPattern.username === 1) {
-      return next(
-        new Exception(HTTP_CODE.BAD_REQUEST, `${username} has been registered`),
-      );
-    }
-    if (err.keyPattern.email === 1) {
-      return next(
-        new Exception(HTTP_CODE.BAD_REQUEST, `${email} has been registered`),
-      );
-    }
+    console.log(err);
     return next(new ServerErrorException());
   }
 };

@@ -1,13 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
-import {
-  Box,
-  Button,
-  Container,
-  FormControl,
-  Textarea,
-} from "@chakra-ui/react";
-import { Dispatch, FC, useEffect, useState } from "react";
+import { Box, Container } from "@chakra-ui/react";
+import { Dispatch, useEffect, useState } from "react";
 import CreatePost from "../components/CreatePost";
 import Posts from "../components/Posts";
 import axiosInstance from "../utils/AxiosInterceptor";
