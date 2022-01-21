@@ -9,7 +9,6 @@ import {
   Input,
   Text,
 } from "@chakra-ui/react";
-import axios from "axios";
 import React, { Dispatch, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
@@ -19,6 +18,7 @@ import {
   LOADING_AUTH,
   STOP_LOADING_AUTH,
 } from "../store/types/AuthTypes";
+import axiosInstance from "../utils/AxiosInterceptor";
 import getGoogleOauthURL from "../utils/GetGoogleOAuthURL";
 
 const Login = () => {
@@ -41,15 +41,9 @@ const Login = () => {
   const handleLogin = async () => {
     try {
       dispatch({ type: LOADING_AUTH });
-      const { data } = await axios.post(
+      const { data } = await axiosInstance.post(
         `${process.env.REACT_APP_SERVER_URL}/api/auth/login`,
-        state,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
+        state
       );
       dispatch({
         type: "AUTHENTICATED_USER_DATA",

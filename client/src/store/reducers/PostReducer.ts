@@ -85,42 +85,54 @@ export default function PostReducer(
         isLoadingPost: false,
       };
     case "LIKE_POST_OR_DISLIKE":
-      const index = findPostIndex(action.payload.postId);
-      const isLiked = posts[index].likes.find(
-        (userId) => userId === action.payload.userId
-      );
-      if (isLiked) {
-        const filteredPost = postsCopy[index].likes.filter(
-          (userId) => userId !== action.payload.userId
+      const likeOrDislike = () => {
+        const postIndex = findPostIndex(action.payload.postId);
+        const isLiked = posts[postIndex].likes.find(
+          (userId) => userId === action.payload.userId
         );
-        postsCopy[index].likes = filteredPost;
-      } else {
-        postsCopy[index].likes.push(action.payload.userId);
-      }
+        if (isLiked) {
+          const filteredPost = postsCopy[postIndex].likes.filter(
+            (userId) => userId !== action.payload.userId
+          );
+          postsCopy[postIndex].likes = filteredPost;
+        } else {
+          postsCopy[postIndex].likes.push(action.payload.userId);
+        }
+        return postsCopy;
+      };
       return {
         ...state,
-        posts: postsCopy,
+        posts: likeOrDislike(),
       };
     case "TOGGLE_IS_EDIT":
-      const k = findPostIndex(action.payload.postId);
-      postsCopy[k].isEdit = !postsCopy[k].isEdit;
+      const toggleIsEdit = () => {
+        const postIndex = findPostIndex(action.payload.postId);
+        postsCopy[postIndex].isEdit = !postsCopy[postIndex].isEdit;
+        return postsCopy;
+      };
       return {
         ...state,
-        posts: postsCopy,
+        posts: toggleIsEdit(),
       };
     case "TOGGLE_IS_COMMENT":
-      const idx = findPostIndex(action.payload.postId);
-      postsCopy[idx].isComment = !postsCopy[idx].isComment;
+      const toggleComment = () => {
+        const postIndex = findPostIndex(action.payload.postId);
+        postsCopy[postIndex].isComment = !postsCopy[postIndex].isComment;
+        return postsCopy;
+      };
       return {
         ...state,
-        posts: postsCopy,
+        posts: toggleComment(),
       };
     case "UPDATE_POST":
-      const j = findPostIndex(action.payload.postId);
-      postsCopy[j].description = action.payload.description;
+      const updatePost = () => {
+        const postIndex = findPostIndex(action.payload.postId);
+        postsCopy[postIndex].description = action.payload.description;
+        return postsCopy;
+      };
       return {
         ...state,
-        posts: postsCopy,
+        posts: updatePost(),
       };
     case "DELETE_POST":
       return {
@@ -128,27 +140,30 @@ export default function PostReducer(
         posts: posts.filter((post) => post._id !== action.payload.postId),
       };
     case "ADD_COMMENT":
-      const pidx = findPostIndex(action.payload.postId);
-      postsCopy[pidx].comments.splice(0, 0, action.payload.comment);
+      const addComment = () => {
+        const postIndex = findPostIndex(action.payload.postId);
+        postsCopy[postIndex].comments.splice(0, 0, action.payload.comment);
+        return postsCopy;
+      };
       return {
         ...state,
-        posts: postsCopy,
+        posts: addComment(),
       };
     case "TOGGLE_LIKE_COMMENT":
       const likeComment = () => {
         const { commentId, postId, userId } = action.payload;
-        const pindx = findPostIndex(postId);
-        const cindx = findCommentIndex(posts[pindx], commentId);
-        const isLiked = postsCopy[pindx].comments[cindx].likes.find(
+        const postIndex = findPostIndex(postId);
+        const commentIndex = findCommentIndex(posts[postIndex], commentId);
+        const isLiked = postsCopy[postIndex].comments[commentIndex].likes.find(
           (like) => like === userId
         );
         if (isLiked) {
-          const filteredLikes = postsCopy[pindx].comments[cindx].likes.filter(
-            (like) => like !== userId
-          );
-          postsCopy[pindx].comments[cindx].likes = filteredLikes;
+          const filteredLikes = postsCopy[postIndex].comments[
+            commentIndex
+          ].likes.filter((like) => like !== userId);
+          postsCopy[postIndex].comments[commentIndex].likes = filteredLikes;
         } else {
-          postsCopy[pindx].comments[cindx].likes.push(userId);
+          postsCopy[postIndex].comments[commentIndex].likes.push(userId);
         }
         return postsCopy;
       };

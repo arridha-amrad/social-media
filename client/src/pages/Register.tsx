@@ -5,7 +5,7 @@ import RegisterComponents from "../components/RegisterComponents";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
 import { LOADING_AUTH, STOP_LOADING_AUTH } from "../store/types/AuthTypes";
-import axios, { AxiosRequestConfig } from "axios";
+import axiosInstance from "../utils/AxiosInterceptor";
 
 const Register = () => {
   const [state, setState] = useState({
@@ -31,21 +31,12 @@ const Register = () => {
     });
   };
 
-  // to send json data and get cookies from server
-  const axiosConfig: AxiosRequestConfig = {
-    headers: {
-      "Content-Type": "application/json",
-    },
-    withCredentials: true,
-  };
-
   const handleRegister = async () => {
     dispatch({ type: LOADING_AUTH });
     try {
-      const { data, status } = await axios.post(
+      const { data, status } = await axiosInstance.post(
         `${process.env.REACT_APP_SERVER_URL}/api/auth/register`,
-        state,
-        axiosConfig
+        state
       );
       if (status === 201) {
         setStep((prev) => prev + 1);
@@ -73,12 +64,11 @@ const Register = () => {
     console.log("verificationCode : ", verificationCode);
     dispatch({ type: LOADING_AUTH });
     try {
-      await axios.put(
+      await axiosInstance.put(
         `${process.env.REACT_APP_SERVER_URL}/api/auth/verify-email`,
         {
           verificationCode,
-        },
-        axiosConfig
+        }
       );
       setStep(0);
       window.location.href = "/";
