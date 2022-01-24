@@ -1,9 +1,9 @@
-import express from "express"
-import { googleOauthHandler } from "../controllers/OAuthGoogle";
+import express from 'express';
+import { googleOauthHandler } from '../controllers/OAuthGoogle';
 
-const router = express.Router()
+// eslint-disable-next-line
+const router = express.Router();
 
-router.get("/oauth", googleOauthHandler)
-
+router.get('/oauth', googleOauthHandler);
 
 export default router;

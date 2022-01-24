@@ -9,6 +9,7 @@ import {
 } from '../controllers/CommentController';
 import { verifyAccessToken } from '../services/JwtService';
 
+// eslint-disable-next-line
 const router = express.Router();
 
 router.get('/:postId', verifyAccessToken, getCommentsHandler);

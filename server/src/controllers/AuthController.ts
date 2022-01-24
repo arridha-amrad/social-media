@@ -229,7 +229,7 @@ export const refreshTokenHandler = async (
   req: Request,
   res: Response,
   next: NextFunction,
-): Promise<void> => {
+) => {
   try {
     const cookieId = req.cookies.qid;
     const encryptedRefreshToken = await redis.get(`${cookieId}_refToken`);
@@ -281,7 +281,7 @@ export const forgotPasswordHandler = async (
     await user.save();
     const token = await JwtService.createEmailLinkToken(email);
     if (token) {
-      const encryptedToken = encrypt(token).replaceAll('/', '_');
+      const encryptedToken = encrypt(token).replace(/\//g, '_');
       await sendEmail(
         email,
         resetPasswordRequest(user.username, encryptedToken),
@@ -306,7 +306,7 @@ export const resetPasswordHandler = async (
     return next(new BadRequestException(errors));
   }
   try {
-    const token = decrypt(encryptedLinkToken.replaceAll('_', '/'));
+    const token = decrypt(encryptedLinkToken.replace(/_/g, '/'));
     const payload = await JwtService.verifyTokenLink(token);
     const user = await UserModel.findOne({ email: payload.email });
     if (user) {

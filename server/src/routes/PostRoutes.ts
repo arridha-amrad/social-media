@@ -8,6 +8,8 @@ import {
   likeDislikeHandler,
 } from '../controllers/PostController';
 import { verifyAccessToken } from '../services/JwtService';
+
+// eslint-disable-next-line
 const router = express.Router();
 
 router.get('/', verifyAccessToken, getPostsHandler);

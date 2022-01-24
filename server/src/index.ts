@@ -57,7 +57,7 @@ export const runServer = (): Application => {
   return app;
 };
 
-connect(process.env.MONGO_URI!)
+connect(process.env.MONGO_URI ?? '')
   .then(() => {
     runServer();
   })

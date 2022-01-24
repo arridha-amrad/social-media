@@ -12,9 +12,11 @@ export interface AuthState {
   isLoadingAuth: boolean;
   isAuthenticated: boolean;
   authenticatedUser: AuthenticatedUserData | null;
+  authMessage: string | null;
 }
 
 const initialState: AuthState = {
+  authMessage: "",
   isLoadingAuth: false,
   isAuthenticated: false,
   authenticatedUser: null,
@@ -46,6 +48,16 @@ export default function AuthReducer(
         ...state,
         isAuthenticated: false,
         authenticatedUser: null,
+      };
+    case "SET_AUTH_MESSAGE":
+      return {
+        ...state,
+        authMessage: action.payload,
+      };
+    case "UNSET_AUTH_MESSAGE":
+      return {
+        ...state,
+        authMessage: null,
       };
     default:
       return state;

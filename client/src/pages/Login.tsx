@@ -22,7 +22,8 @@ const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<Dispatch<AuthActionsType>>();
   const [message, setMessage] = useState("");
-  const { isLoadingAuth, isAuthenticated } = useSelector(
+  const [urlNextParam, setURLNextParam] = useState("");
+  const { isLoadingAuth, isAuthenticated, authMessage } = useSelector(
     (state: RootState) => state.auth
   );
   const [state, setState] = useState({
@@ -45,7 +46,11 @@ const Login = () => {
         type: "SET_AUTHENTICATED",
         payload: data.user,
       });
-      navigate("/");
+      if (urlNextParam) {
+        navigate(`${urlNextParam}`);
+      } else {
+        navigate("/");
+      }
     } catch (err: any) {
       console.log(err);
       setMessage(err.response.data.message);
@@ -54,6 +59,13 @@ const Login = () => {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const myParam = urlParams.get("e");
+    const nextParam = urlParams.get("next");
+    if (nextParam) {
+      setURLNextParam(nextParam);
+    }
+    if (authMessage) {
+      setMessage(authMessage);
+    }
     if (myParam) {
       setMessage(myParam);
     }

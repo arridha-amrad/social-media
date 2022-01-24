@@ -15,6 +15,8 @@ export const UPDATE_USER_DATA = "UPDATE_USER_DATA";
 export const UPLOAD_AVATAR = "UPLOAD_AVATAR";
 export const UNSET_BLOCKED = "UNSET_BLOCKED";
 export const RESET_AUTH_USER = "RESET_AUTH_USER";
+export const SET_AUTH_MESSAGE = "SET_AUTH_MESSAGE";
+export const UNSET_AUTH_MESSAGE = "UNSET_AUTH_MESSAGE";
 
 export type AuthActionsType =
   | { type: typeof UNSET_BLOCKED }
@@ -30,4 +32,6 @@ export type AuthActionsType =
   | { type: typeof LOGOUT }
   | { type: typeof SET_UNAUTHENTICATED }
   | { type: typeof SET_AUTHENTICATED; payload: AuthenticatedUserData }
+  | { type: typeof SET_AUTH_MESSAGE; payload: string }
+  | { type: typeof UNSET_AUTH_MESSAGE }
   | { type: typeof RESET_REQUEST_STATUS };

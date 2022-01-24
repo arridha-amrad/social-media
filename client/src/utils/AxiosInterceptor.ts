@@ -32,6 +32,10 @@ axiosInstance.interceptors.response.use(
         })
         .catch((err) => {
           console.log("err from interceptor : ", err.response.data);
+          if (err.response.status === 500) {
+            const pathname = window.location.pathname;
+            window.location.href = `/login?e=You need to login to perform this action&next=${pathname}`;
+          }
           return Promise.reject(err);
         });
     }

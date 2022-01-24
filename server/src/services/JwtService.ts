@@ -35,11 +35,11 @@ export const createEmailLinkToken = (
 ): Promise<string | undefined> => {
   return new Promise((resolve, reject) => {
     if (!email) {
-      reject('createEmailLinkToken error : email not provided');
+      reject(new Error('createEmailLinkToken error : email not provided'));
     }
     jwt.sign({ email }, privateKey, signOptions, (err, token) => {
       if (err) {
-        reject(`createEmailLinkToken error : ${err.message}`);
+        reject(new Error(`createEmailLinkToken error : ${err.message}`));
       }
       resolve(token);
     });
@@ -49,11 +49,11 @@ export const createEmailLinkToken = (
 export const verifyTokenLink = (token: string): Promise<LinkPayloadType> => {
   return new Promise((resolve, reject) => {
     if (!token) {
-      reject('verifyEmailTokenLink error : token not provided');
+      reject(new Error('verifyEmailTokenLink error : token not provided'));
     }
     jwt.verify(token, publicKey, verifyOptions, (err, payload) => {
       if (err) {
-        reject(`verifyEmailTokenLink error : ${err.message}`);
+        reject(new Error(`verifyEmailTokenLink error : ${err.message}`));
       }
       resolve(payload as LinkPayloadType);
     });
@@ -83,7 +83,7 @@ export const signAccessToken = (
   // console.log('public key : ', publicKey);
   return new Promise((resolve, reject) => {
     if (!user.id) {
-      reject('signAccessToken error : userId not provided');
+      reject(new Error('signAccessToken error : userId not provided'));
     }
     jwt.sign(
       { userId: user.id, role: user.role },
@@ -149,10 +149,10 @@ export const signRefreshToken = (
 ): Promise<string | undefined> => {
   return new Promise((resolve, reject) => {
     if (!user) {
-      reject('signRefreshToken error : userId not provided');
+      reject(new Error('signRefreshToken error : userId not provided'));
     }
     if (!user.jwtVersion) {
-      reject('signRefreshToken error : jwtVersion not provided');
+      reject(new Error('signRefreshToken error : jwtVersion not provided'));
     }
     jwt.sign(
       { userId: user.id, jwtVersion: user.jwtVersion },
@@ -160,7 +160,7 @@ export const signRefreshToken = (
       refreshTokenSignOptions,
       (err, token) => {
         if (err) {
-          reject(`signRefreshToken error : ${err.message}`);
+          reject(new Error(`signRefreshToken error : ${err.message}`));
         } else {
           resolve(`Bearer ${token}`);
         }
@@ -174,7 +174,9 @@ export const verifyRefreshToken = (
 ): Promise<RefreshTokenPayloadType | undefined> => {
   return new Promise((resolve, reject) => {
     if (!oldRefreshToken) {
-      reject('verifyRefreshToken error : old refresh token not provided');
+      reject(
+        new Error('verifyRefreshToken error : old refresh token not provided'),
+      );
     }
     jwt.verify(
       oldRefreshToken,
@@ -182,7 +184,7 @@ export const verifyRefreshToken = (
       refreshTokenVerifyOptions,
       (err, payload) => {
         if (err) {
-          reject(`verifyRefreshToken error : ${err.message}`);
+          reject(new Error(`verifyRefreshToken error : ${err.message}`));
         }
         resolve(payload as RefreshTokenPayloadType);
       },
