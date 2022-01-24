@@ -12,7 +12,6 @@ const CreatePost = () => {
   const dispatch = useDispatch<Dispatch<PostActionTypes>>();
   const handleCreatePost = async () => {
     try {
-      dispatch({ type: "LOADING_POST" });
       const { data } = await axiosInstance.post("/api/post", state);
       dispatch({
         type: ADD_POST,
@@ -22,8 +21,6 @@ const CreatePost = () => {
       ref.current!.value = "";
     } catch (err) {
       console.log(err);
-    } finally {
-      dispatch({ type: "STOP_LOADING_POST" });
     }
   };
   return (

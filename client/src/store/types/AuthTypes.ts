@@ -29,5 +29,5 @@ export type AuthActionsType =
   | { type: typeof STOP_LOADING_AUTH }
   | { type: typeof LOGOUT }
   | { type: typeof SET_UNAUTHENTICATED }
-  | { type: typeof SET_AUTHENTICATED }
+  | { type: typeof SET_AUTHENTICATED; payload: AuthenticatedUserData }
   | { type: typeof RESET_REQUEST_STATUS };

@@ -13,11 +13,8 @@ import React, { Dispatch, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import { RootState } from "../store";
-import {
-  AuthActionsType,
-  LOADING_AUTH,
-  STOP_LOADING_AUTH,
-} from "../store/types/AuthTypes";
+import { AuthenticatedUserData } from "../store/reducers/AuthReducer";
+import { AuthActionsType } from "../store/types/AuthTypes";
 import axiosInstance from "../utils/AxiosInterceptor";
 import getGoogleOauthURL from "../utils/GetGoogleOAuthURL";
 
@@ -38,23 +35,20 @@ const Login = () => {
       [e.target.name]: e.target.value,
     });
   };
+
   const handleLogin = async () => {
     try {
-      dispatch({ type: LOADING_AUTH });
-      const { data } = await axiosInstance.post(
-        `${process.env.REACT_APP_SERVER_URL}/api/auth/login`,
-        state
-      );
+      const { data } = await axiosInstance.post<{
+        user: AuthenticatedUserData;
+      }>(`${process.env.REACT_APP_SERVER_URL}/api/auth/login`, state);
       dispatch({
-        type: "AUTHENTICATED_USER_DATA",
+        type: "SET_AUTHENTICATED",
         payload: data.user,
       });
-      window.location.href = "/";
+      navigate("/");
     } catch (err: any) {
       console.log(err);
       setMessage(err.response.data.message);
-    } finally {
-      dispatch({ type: STOP_LOADING_AUTH });
     }
   };
   useEffect(() => {
@@ -63,7 +57,7 @@ const Login = () => {
     if (myParam) {
       setMessage(myParam);
     }
-    if (!isLoadingAuth && isAuthenticated) {
+    if (isAuthenticated) {
       navigate("/");
     }
     // eslint-disable-next-line

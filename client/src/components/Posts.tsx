@@ -10,10 +10,11 @@ import CommentButton from "./CommentButton";
 import AddPostCommentBox from "./AddPostCommentBox";
 import Comments from "./Comments";
 import { useNavigate } from "react-router-dom";
+import { FC } from "react";
+import { PostData } from "../store/reducers/PostReducer";
 
-const Posts = () => {
+const Posts: FC<{ posts: PostData[] }> = ({ posts }) => {
   const {
-    posts: { posts },
     auth: { authenticatedUser },
   } = useSelector((state: RootState) => state);
   const navigate = useNavigate();

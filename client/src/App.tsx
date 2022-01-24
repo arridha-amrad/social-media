@@ -1,40 +1,32 @@
 import { Box, Spinner } from "@chakra-ui/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Dispatch } from "react";
 import { useDispatch } from "react-redux";
 import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Home, Login, Register } from "./pages";
 import PostDetail from "./pages/PostDetail";
-import {
-  AUTHENTICATED_USER_DATA,
-  LOADING_AUTH,
-  SET_AUTHENTICATED,
-  STOP_LOADING_AUTH,
-} from "./store/types/AuthTypes";
+import { AuthActionsType } from "./store/types/AuthTypes";
 import axiosInstance from "./utils/AxiosInterceptor";
 
 const App = () => {
   const [isMounted, setIsMounted] = useState(true);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<Dispatch<AuthActionsType>>();
   const [isLoading, setIsLoading] = useState(true);
   const fetchUser = async () => {
     try {
-      dispatch({ type: LOADING_AUTH });
+      dispatch({ type: "LOADING_AUTH" });
       await axiosInstance.get("/api/auth/refresh-token");
       const { data } = await axiosInstance.get("/api/user/me");
       if (isMounted) {
         dispatch({
-          type: SET_AUTHENTICATED,
-        });
-        dispatch({
-          type: AUTHENTICATED_USER_DATA,
+          type: "SET_AUTHENTICATED",
           payload: data,
         });
       }
     } catch (err) {
       console.log(err);
     } finally {
-      dispatch({ type: STOP_LOADING_AUTH });
+      dispatch({ type: "STOP_LOADING_AUTH" });
       setTimeout(() => {
         setIsLoading(false);
       }, 2000);

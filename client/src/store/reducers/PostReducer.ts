@@ -32,11 +32,13 @@ export interface PostData {
 export interface PostState {
   posts: PostData[];
   isLoadingPost: boolean;
+  isFetched: boolean;
   isLoadingComment: boolean;
 }
 
 const initialState: PostState = {
   posts: [],
+  isFetched: false,
   isLoadingPost: false,
   isLoadingComment: false,
 };
@@ -73,6 +75,7 @@ export default function PostReducer(
       return {
         ...state,
         posts: action.payload,
+        isFetched: true,
       };
     case "ADD_POST":
       return {

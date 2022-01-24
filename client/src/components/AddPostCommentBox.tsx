@@ -39,6 +39,7 @@ const AddPostCommentBox: FC<{ post: PostData }> = ({ post }) => {
         type: "STOP_LOADING_COMMENT",
       });
       ref.current!.value = "";
+      setComment("");
     }
   };
   return (
@@ -55,6 +56,7 @@ const AddPostCommentBox: FC<{ post: PostData }> = ({ post }) => {
         <InputRightElement width="4.5rem">
           <Button
             isLoading={isLoadingComment}
+            isDisabled={comment.trim() === ""}
             colorScheme="blue"
             h="1.75rem"
             size="sm"

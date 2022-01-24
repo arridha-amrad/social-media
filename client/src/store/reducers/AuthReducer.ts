@@ -39,18 +39,14 @@ export default function AuthReducer(
       return {
         ...state,
         isAuthenticated: true,
+        authenticatedUser: action.payload,
       };
     case "SET_UNAUTHENTICATED":
       return {
         ...state,
         isAuthenticated: false,
+        authenticatedUser: null,
       };
-    case "AUTHENTICATED_USER_DATA":
-      return {
-        ...state,
-        authenticatedUser: action.payload,
-      };
-    case "RESET_AUTH_USER":
     default:
       return state;
   }

@@ -125,15 +125,19 @@ export const emailVerificationHandler = async (
         },
         { new: true },
       );
-      const accessToken = await JwtService.signAccessToken(user!);
-      const refreshToken = await JwtService.signRefreshToken(user!);
-      const encryptedAccessToken = encrypt(accessToken!);
-      const encryptedRefreshToken = encrypt(refreshToken!);
-      await redis.set(`${userId}_refToken`, encryptedRefreshToken);
-      const loginUser = await UserModel.findById(userId).select(
-        '-password -jwtVersion -strategy -requiredAuthAction',
-      );
-      return responseWithCookie(res, encryptedAccessToken, loginUser!);
+      if (user) {
+        const accessToken = await JwtService.signAccessToken(user);
+        const refreshToken = await JwtService.signRefreshToken(user);
+        const encryptedAccessToken = encrypt(accessToken ?? '');
+        const encryptedRefreshToken = encrypt(refreshToken ?? '');
+        await redis.set(`${userId}_refToken`, encryptedRefreshToken);
+        const loginUser = await UserModel.findById(userId).select(
+          '-password -jwtVersion -strategy -requiredAuthAction',
+        );
+        if (loginUser) {
+          return responseWithCookie(res, encryptedAccessToken, loginUser);
+        }
+      }
     } else {
       return next(
         new Exception(
